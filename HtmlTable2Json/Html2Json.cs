@@ -28,7 +28,8 @@ namespace HtmlTable2Json
             {
                 // Get request body
                 dynamic data = req.Content.ReadAsStringAsync().Result;
-                html = data;
+                // removing carring return and new line characters
+                html = data.Replace("\r\n","");
             }
 
             //ceate an Html Document object
@@ -48,16 +49,28 @@ namespace HtmlTable2Json
         {
             // create a json object to store the data from htmlNode
             var json = new JObject();
+            // getting the table tags from Specialist Finder Email
+            var htmltable = htmlNode.SelectSingleNode("//table");
+            // getting the elements in the html table tag
+            HtmlNodeCollection childnodes = htmltable.ChildNodes;
 
             //recurring each element in HtmlNode and create a key/Value pairs arrays
-            foreach(var row in htmlNode.SelectNodes("//tr"))
+            foreach (var node in childnodes)
             {
-                // recurring the column in the table
-                if (row.HasChildNodes)
+                if (node.NodeType == HtmlNodeType.Element)
                 {
-                    var recs = row.SelectNodes("//td");
-                    // add json data from table td
-                    json[recs[0].InnerText.ToString()] = recs[1].InnerText.ToString();
+                    // getting the table with the Specialist Finder information
+                    var tablerows = node.SelectNodes("//html[1]/body[1]/div[1]/table[1]/tbody[1]/tr[2]/td[1]/table[1]/tbody[1]/tr");
+                    // recurring the rows in the html table
+                    foreach (var row in tablerows)
+                    {
+                        if (row.NodeType == HtmlNodeType.Element)
+                        {
+                            // recurring the column in the table
+                            var recs = row.Descendants("td").ToArray();
+                            json[recs[0].InnerText.ToString()] = recs[1].InnerText.ToString();
+                        }
+                    }
                 }
             }
             // creating json object
