@@ -60,7 +60,7 @@ namespace HtmlTable2Json
                 if (node.NodeType == HtmlNodeType.Element)
                 {
                     // getting the table with the Specialist Finder information
-                    var tablerows = node.SelectNodes("//html[1]/body[1]/div[1]/table[1]/tbody[1]/tr[2]/td[1]/table[1]/tbody[1]/tr");
+                    var tablerows = node.SelectNodes("//table[@class='details']/tbody[1]/tr");
                     // recurring the rows in the html table
                     foreach (var row in tablerows)
                     {
